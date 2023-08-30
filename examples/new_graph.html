@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Graph Visualization</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+    }
+  </style>
+<script src="https://thunkable.github.io/webviewer-extension/thunkableWebviewerExtension.js" type="text/javascript"></script>
+
+</head>
+<body>
+  <canvas id="graphCanvas" width="600" height="400"></canvas>
+  <script>
+    function generateCompleteGraph(numNodes, canvas) {
+      const ctx = canvas.getContext("2d");
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const radius = Math.min(centerX, centerY) - 20;
+      const angleIncrement = (2 * Math.PI) / numNodes;
+
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw nodes
+      for (let i = 0; i < numNodes; i++) {
+        const angle = i * angleIncrement;
+        const x = centerX + radius * Math.cos(angle);
+        const y = centerY + radius * Math.sin(angle);
+
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = "blue";
+        ctx.fill();
+      }
+
+      // Draw edges
+      for (let i = 0; i < numNodes; i++) {
+        const angleA = i * angleIncrement;
+        const xA = centerX + radius * Math.cos(angleA);
+        const yA = centerY + radius * Math.sin(angleA);
+
+        for (let j = i + 1; j < numNodes; j++) {
+          const angleB = j * angleIncrement;
+          const xB = centerX + radius * Math.cos(angleB);
+          const yB = centerY + radius * Math.sin(angleB);
+
+          ctx.beginPath();
+          ctx.moveTo(xA, yA);
+          ctx.lineTo(xB, yB);
+          ctx.strokeStyle = "black";
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Call the function with the desired number of nodes
+    const canvas = document.getElementById("graphCanvas");
+    ThunkableWebviewerExtension.receiveMessage(function(message) {
+         generateCompleteGraph(JSON.parse(message), canvas);
+    });
+  </script>
+</body>
+</html>
