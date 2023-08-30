@@ -1,0 +1,35 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://thunkable.github.io/webviewer-extension/thunkableWebviewerExtension.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <br />
+    <button type="button" id="textMessageButton">Click to send a text message to the app</button>
+    <br />
+    <button type="button" id="objectMessageButton">Click to send an object message to the app</button>
+    <br />
+    <button type="button" id="listMessageButton">Click to send a list message to the app</button>
+    <br />
+  </body>
+  <script type="text/javascript">
+    // when the button is clicked, send a message to the app
+    document.getElementById('textMessageButton').onclick = function() {
+      ThunkableWebviewerExtension.postMessage(['text', 'This is a text sent from a webviewer to the App']);
+    }
+    document.getElementById('objectMessageButton').onclick = function() {
+      ThunkableWebviewerExtension.postMessage(['object', {name: 'Alex', age: 25}]);
+    }
+    document.getElementById('listMessageButton').onclick = function() {
+      ThunkableWebviewerExtension.postMessage(['list', [1,2,3,4,5]]);
+    }
+
+    ThunkableWebviewerExtension.receiveMessageWithReturnValue(function(message, callback) {
+      if (message === 'slow message') {
+        setTimeout(() => callback('slow response'), 4000);
+      } else {
+        callback('fast response');
+      }
+    });
+  </script>
+</html>
