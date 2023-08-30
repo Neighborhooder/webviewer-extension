@@ -57,6 +57,7 @@
 
     // Call the function with the desired number of nodes
     const canvas = document.getElementById("graphCanvas");
+    
     ThunkableWebviewerExtension.receiveMessage(function(message) {
          generateCompleteGraph(JSON.parse(message), canvas);
     });
