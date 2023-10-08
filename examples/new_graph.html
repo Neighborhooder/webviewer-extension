@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Graph Visualization</title>
- 
+
   <script src="https://thunkable.github.io/webviewer-extension/thunkableWebviewerExtension.js" type="text/javascript"></script>
   <style>
       /* Add CSS styles for centering */
@@ -16,7 +16,7 @@
     </style>
 </head>
 <body>
-  
+  <p id="receivedMessage"></p>
   <canvas id="graphCanvas" width="300" height="300"></canvas>
   <script>
     function generateCompleteGraph(numNodes, canvas) {
@@ -63,8 +63,9 @@
 
     // Call the function with the desired number of nodes
     const canvas = document.getElementById("graphCanvas");
-    
-    ThunkableWebviewerExtension.receiveMessage(function(message) {
+    const paragraph = document.getElementById("receivedMessage");      
+    ThunkableWebviewerExtension.receiveMessage(function(message) {         
+         paragraph.textContent = message;
          generateCompleteGraph(JSON.parse(message), canvas);
     });
   </script>
