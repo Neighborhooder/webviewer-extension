@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Bridge Test</title>
+    <script>
+        // Wait for messages from Thunkable
+        document.addEventListener("message", function(event) {
+            let data = event.data;
+            console.log("Received from Thunkable:", data);
+
+            // Process the message (Basic example: Reverse text)
+            let response = data.split("").reverse().join("");
+
+            // Send the response back to Thunkable
+            if (window.ReactNativeWebView) {
+                window.ReactNativeWebView.postMessage(response);
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>JavaScript Web Bridge Test</h1>
+    <p>Waiting for messages from Thunkable...</p>
+</body>
+</html>
