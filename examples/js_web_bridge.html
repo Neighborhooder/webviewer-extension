@@ -1,47 +1,41 @@
-<html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://thunkable.github.io/webviewer-extension/thunkableWebviewerExtension.js" type="text/javascript"></script>
-  </head>
-  <body>
-    <h1>JavaScript Web Bridge Test</h1>
-    <p>Click a button to send a message to the Thunkable app.</p>
 
-    <button type="button" id="textMessageButton">Send Text Message</button>
-    <button type="button" id="objectMessageButton">Send Object Message</button>
-    <button type="button" id="listMessageButton">Send List Message</button>
-
-    <h3>Response from Thunkable:</h3>
-    <p id="response">Waiting...</p>
-
-    <script type="text/javascript">
-      // When the button is clicked, send a message to Thunkable
-      document.getElementById('textMessageButton').onclick = function() {
-        ThunkableWebviewerExtension.postMessage(['text', 'Hello from WebViewer!']);
-      };
-
-      document.getElementById('objectMessageButton').onclick = function() {
-        ThunkableWebviewerExtension.postMessage(['object', { name: 'Alex', age: 25 }]);
-      };
-
-      document.getElementById('listMessageButton').onclick = function() {
-        ThunkableWebviewerExtension.postMessage(['list', [1, 2, 3, 4, 5]]);
-      };
-
-      // Receive message from Thunkable and update the page
+<script type="text/javascript">
       ThunkableWebviewerExtension.receiveMessageWithReturnValue(function(message, callback) {
-        let responseElement = document.getElementById("response");
+        try {
+          const msgFromApp = JSON.parse(message);
+          let result = null;
 
-        if (message === 'slow message') {
-          setTimeout(() => {
-            callback('Delayed Response from JavaScript');
-            responseElement.innerText = "Received: Delayed Response!";
-          }, 4000);
-        } else {
-          callback('Instant Response from JavaScript');
-          responseElement.innerText = "Received: Instant Response!";
+          if (msgFromApp.type === "mathOperation") {
+            const num1 = parseFloat(msgFromApp.num1);
+            const num2 = parseFloat(msgFromApp.num2);
+            
+            if (msgFromApp.operation === "add") {
+              result = num1 + num2;
+            } else if (msgFromApp.operation === "subtract") {
+              result = num1 - num2;
+            } else if (msgFromApp.operation === "multiply") {
+              result = num1 * num2;
+            } else if (msgFromApp.operation === "divide") {
+              result = num2 !== 0 ? num1 / num2 : "Error: Division by zero";
+            }
+          } 
+          else if (msgFromApp.type === "isPalindrome") {
+            const str = msgFromApp.string.toLowerCase().replace(/[^a-z0-9]/g, '');
+            result = str === str.split("").reverse().join("");
+          } 
+          else if (msgFromApp.type === "reverseString") {
+            result = msgFromApp.string.split("").reverse().join("");
+          }
+
+          // Send response back to Thunkable
+          callback(String(result));
+
+          // Update HTML for debugging
+          document.getElementById("response").innerText = `Received: ${message} → Result: ${result}`;
+
+        } catch (e) {
+          console.error("Error processing message:", e);
         }
       });
     </script>
-  </body>
-</html>
