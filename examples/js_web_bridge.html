@@ -1,27 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JavaScript Bridge Test</title>
-    <script>
-        // Wait for messages from Thunkable
-        document.addEventListener("message", function(event) {
-            let data = event.data;
-            console.log("Received from Thunkable:", data);
-
-            // Process the message (Basic example: Reverse text)
-            let response = data.split("").reverse().join("");
-
-            // Send the response back to Thunkable
-            if (window.ReactNativeWebView) {
-                window.ReactNativeWebView.postMessage(response);
-            }
-        });
-    </script>
-</head>
-<body>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://thunkable.github.io/webviewer-extension/thunkableWebviewerExtension.js" type="text/javascript"></script>
+  </head>
+  <body>
     <h1>JavaScript Web Bridge Test</h1>
-    <p>Waiting for messages from Thunkable...</p>
-</body>
+    <p>Click a button to send a message to the Thunkable app.</p>
+
+    <button type="button" id="textMessageButton">Send Text Message</button>
+    <button type="button" id="objectMessageButton">Send Object Message</button>
+    <button type="button" id="listMessageButton">Send List Message</button>
+
+    <h3>Response from Thunkable:</h3>
+    <p id="response">Waiting...</p>
+
+    <script type="text/javascript">
+      // When the button is clicked, send a message to Thunkable
+      document.getElementById('textMessageButton').onclick = function() {
+        ThunkableWebviewerExtension.postMessage(['text', 'Hello from WebViewer!']);
+      };
+
+      document.getElementById('objectMessageButton').onclick = function() {
+        ThunkableWebviewerExtension.postMessage(['object', { name: 'Alex', age: 25 }]);
+      };
+
+      document.getElementById('listMessageButton').onclick = function() {
+        ThunkableWebviewerExtension.postMessage(['list', [1, 2, 3, 4, 5]]);
+      };
+
+      // Receive message from Thunkable and update the page
+      ThunkableWebviewerExtension.receiveMessageWithReturnValue(function(message, callback) {
+        let responseElement = document.getElementById("response");
+
+        if (message === 'slow message') {
+          setTimeout(() => {
+            callback('Delayed Response from JavaScript');
+            responseElement.innerText = "Received: Delayed Response!";
+          }, 4000);
+        } else {
+          callback('Instant Response from JavaScript');
+          responseElement.innerText = "Received: Instant Response!";
+        }
+      });
+    </script>
+  </body>
 </html>
